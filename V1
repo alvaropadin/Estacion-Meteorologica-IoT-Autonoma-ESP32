@@ -17,7 +17,7 @@ void loop() {
   Serial.println(humidity);
   delay(2000);
 }
- 
+![image alt](https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/aef98a9cdb7d46f03977d1ba93a899450248b6b9/WhatsApp%20Image%202026-09-06%20at%2010.56.02%20(1).jpeg)
 
 Codigo v1.1
 #include <LiquidCrystal.h>
@@ -49,4 +49,5 @@ void loop() {
   delay(2000);
   lcd.clear();
 }
-  
+![image alt]() 
+![image alt]()
