@@ -49,5 +49,5 @@ void loop() {
   delay(2000);
   lcd.clear();
 }
-![image alt]() 
-![image alt]()
+![image alt](https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/35e7ed055639852678e1c18bf80c4b3abd757bd7/WhatsApp%20Image%202026-09-06%20at%2015.33.31%20(1).jpeg) 
+https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/35e7ed055639852678e1c18bf80c4b3abd757bd7/WhatsApp%20Image%202026-09-06%20at%2015.33.31.jpeg
