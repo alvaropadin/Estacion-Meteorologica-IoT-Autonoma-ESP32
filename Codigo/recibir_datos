@@ -1,0 +1,18 @@
+#include <WiFi.h>
+#include <esp_now.h>
+void setup() {
+  WiFi.mode(WIFI_STA);
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error al iniciar ESP-NOW");
+    return;
+  }
+  esp_now_register_send_cb(onDataSent);
+  esp_now_register_recv_cb(onDataReceived);
+}
+void onDataSent(uint8_t *mac_addr, uint8_t sendStatus) {
+  // Código a ejecutar cuando se envían datos a otro dispositivo ESP32
+}
+
+void onDataReceived(uint8_t *mac_addr, uint8_t *data, uint8_t len) {
+  // Código a ejecutar cuando se reciben datos de otro dispositivo ESP32
+}
