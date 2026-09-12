@@ -2,22 +2,29 @@ Codigos de primera versión basada en Arduino y sensores disponibles en primera 
 
 Codigo V1.0:
 #include <DHT.h>
-#define DHT11_PIN 2
+#define DHT11_PIN 19
 DHT dht(DHT11_PIN, DHT11);
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   dht.begin();
+  Serial.println("Iniciando DHT11...");
+  delay(2000);
 }
 void loop() {
   float temperature = dht.readTemperature();
-  Serial.print("Temperature = ");
-  Serial.println(temperature);
   float humidity = dht.readHumidity();
-  Serial.print("Humidity = ");// Print humidity on the serial monitor
-  Serial.println(humidity);
+  if (isnan(temperature) || isnan(humidity)) {
+    Serial.println("Error: no se pudo leer el DHT11");
+  } else {
+    Serial.print("Temperature = ");
+    Serial.print(temperature);
+    Serial.println(" °C");
+    Serial.print("Humidity = ");
+    Serial.print(humidity);
+    Serial.println(" %");
+  }
   delay(2000);
 }
-![image alt](https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/aef98a9cdb7d46f03977d1ba93a899450248b6b9/WhatsApp%20Image%202026-09-06%20at%2010.56.02%20(1).jpeg)
 
 Codigo v1.1
 #include <LiquidCrystal.h>
@@ -49,5 +56,3 @@ void loop() {
   delay(2000);
   lcd.clear();
 }
-![image alt](https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/35e7ed055639852678e1c18bf80c4b3abd757bd7/WhatsApp%20Image%202026-09-06%20at%2015.33.31%20(1).jpeg) 
-https://github.com/fiunchox/Estacion-Meteorologica-IoT-Autonoma-ESP32/blob/35e7ed055639852678e1c18bf80c4b3abd757bd7/WhatsApp%20Image%202026-09-06%20at%2015.33.31.jpeg
