@@ -1,29 +1,78 @@
-Codigos de primera versión basada en Arduino y sensores disponibles en primera instancia
-
-Codigo V1.0:
 #include <DHT.h>
-#define DHT11_PIN 19
+
+// Definición de pines para ESP32
+#define DHT11_PIN 19       // Pin digital para el DHT11
+#define UV_SENSOR_PIN 34   // Pin analógico seguro (ADC1) para el sensor UV en ESP32
+
+// Inicializamos el sensor DHT
 DHT dht(DHT11_PIN, DHT11);
+
 void setup() {
+  // Iniciamos comunicación serie a 115200 (velocidad estándar para ESP32)
   Serial.begin(115200);
+  
+  // Iniciamos el sensor DHT
   dht.begin();
-  Serial.println("Iniciando DHT11...");
-  delay(2000);
+  
+  // --- CONFIGURACIÓN CRÍTICA DEL ADC PARA ESP32 ---
+  // Le decimos al ESP32 que el pin 34 va a recibir voltajes de hasta 3.3V
+  // Sin esto, las lecturas analógicas serán incorrectas
+  analogSetPinAttenuation(UV_SENSOR_PIN, ADC_11db);
+  
+  Serial.println("Iniciando Sistema en ESP32...");
+  Serial.println("DHT11 en Pin 19 | Sensor UV en Pin 34");
+  Serial.println("-------------------------------------");
+  
+  delay(2000); // Damos tiempo a que los sensores se estabilicen
 }
+
 void loop() {
+  // =========================================================
+  // 1. LECTURA DEL SENSOR UV (GUVA-S12SD)
+  // =========================================================
+  int sensorValue = analogRead(UV_SENSOR_PIN);
+  
+  // Matemática para ESP32: Rango de 0 a 3.3V y resolución de 12 bits (0-4095)
+  float voltage = (sensorValue * (3.3 / 4095.0)) * 2.0;
+  
+  // Convertir voltaje a Índice UV (Aproximación: 0.1V = 1 Índice UV)
+  float uvIndex = voltage / 0.1;
+  
+  // Corrección para evitar valores negativos en oscuridad total
+  if (uvIndex < 0) {
+    uvIndex = 0;
+  }
+
+  // Imprimir datos UV en el Monitor Serie
+  Serial.print("UV -> Analog: ");
+  Serial.print(sensorValue);
+  Serial.print(" | Voltaje: ");
+  Serial.print(voltage, 2);
+  Serial.print("V | Indice UV: ");
+  Serial.println(uvIndex, 1);
+
+  // =========================================================
+  // 2. LECTURA DEL SENSOR DHT11
+  // =========================================================
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
+
+  // Comprobar si la lectura del DHT falló
   if (isnan(temperature) || isnan(humidity)) {
-    Serial.println("Error: no se pudo leer el DHT11");
+    Serial.println("DHT -> Error: No se pudo leer el sensor");
   } else {
-    Serial.print("Temperature = ");
-    Serial.print(temperature);
-    Serial.println(" °C");
-    Serial.print("Humidity = ");
-    Serial.print(humidity);
+    // Imprimir datos DHT si todo salió bien
+    Serial.print("DHT -> Temperatura: ");
+    Serial.print(temperature, 1);
+    Serial.print(" °C | Humedad: ");
+    Serial.print(humidity, 1);
     Serial.println(" %");
   }
+
+  // Separador visual para el Monitor Serie
+  Serial.println("-------------------------------------");
+  
+  // Esperar 2 segundos antes de la siguiente lectura
   delay(2000);
 }
-
 
