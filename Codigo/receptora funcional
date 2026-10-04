@@ -1,0 +1,83 @@
+#include <WiFi.h>
+#include <esp_now.h>
+#include "esp_wifi.h"
+
+// =========================================================
+// ESTRUCTURA RECIBIDA
+// =========================================================
+
+struct DatosMeteorologicos {
+  float temperatura;
+  float humedad;
+  float presion;
+  float uvIndex;
+};
+
+// =========================================================
+// RECEPCIÓN ESP-NOW
+// =========================================================
+
+void onDataReceived(
+  const esp_now_recv_info_t *info,
+  const uint8_t *data,
+  int len
+) {
+
+  DatosMeteorologicos datos;
+
+  memcpy(&datos, data, sizeof(datos));
+
+  Serial.println();
+  Serial.println("========= DATOS RECIBIDOS =========");
+
+  Serial.print("Temperatura: ");
+  Serial.print(datos.temperatura, 1);
+  Serial.println(" °C");
+
+  Serial.print("Humedad: ");
+  Serial.print(datos.humedad, 1);
+  Serial.println(" %");
+
+  Serial.print("Presion: ");
+  Serial.print(datos.presion, 1);
+  Serial.println(" hPa");
+
+  Serial.print("Indice UV: ");
+  Serial.println(datos.uvIndex, 1);
+
+  Serial.println("===================================");
+}
+
+// =========================================================
+// SETUP
+// =========================================================
+
+void setup() {
+
+  Serial.begin(115200);
+  delay(1000);
+
+  WiFi.mode(WIFI_STA);
+
+  // Mismo canal que la emisora
+  esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE);
+
+  Serial.print("MAC receptora: ");
+  Serial.println(WiFi.macAddress());
+
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error al iniciar ESP-NOW");
+    return;
+  }
+
+  esp_now_register_recv_cb(onDataReceived);
+
+  Serial.println("ESP-NOW receptor listo");
+}
+
+// =========================================================
+// LOOP
+// =========================================================
+
+void loop() {
+}
