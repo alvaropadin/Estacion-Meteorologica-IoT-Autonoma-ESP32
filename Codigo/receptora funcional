@@ -11,6 +11,7 @@ struct DatosMeteorologicos {
   float humedad;
   float presion;
   float uvIndex;
+  float nivel;
 };
 
 // =========================================================
@@ -44,6 +45,19 @@ void onDataReceived(
 
   Serial.print("Indice UV: ");
   Serial.println(datos.uvIndex, 1);
+
+  // Nivel de agua: el emisor envía el valor ADC en bruto
+  int nivel = (int)datos.nivel;
+
+  // Calibración: 0 = seco, 2000 = lleno (ajusta a tus valores)
+  float nivelPct = map(nivel, 0, 2000, 0, 100);
+  nivelPct = constrain(nivelPct, 0, 100);
+
+  Serial.print("Nivel agua -> ADC: ");
+  Serial.print(nivel);
+  Serial.print(" | ");
+  Serial.print(nivelPct, 0);
+  Serial.println(" %");
 
   Serial.println("===================================");
 }
