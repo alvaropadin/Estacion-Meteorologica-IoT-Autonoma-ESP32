@@ -14,6 +14,7 @@ Adafruit_BMP280 bmp;
 
 #define DHT11_PIN 19
 #define UV_SENSOR_PIN 34
+#define WATER_SENSOR 35   // CAMBIADO: GPIO18 no tiene ADC. GPIO35 es ADC1 (válido con WiFi/ESP-NOW)
 
 DHT dht(DHT11_PIN, DHT11);
 
@@ -32,6 +33,7 @@ struct DatosMeteorologicos {
   float humedad;
   float presion;
   float uvIndex;
+  float nivel;   // CORREGIDO: faltaba el punto y coma
 };
 
 // Variable donde almacenaremos los datos
@@ -72,6 +74,12 @@ void setup() {
   // ---------------------------------------------------------
 
   analogSetPinAttenuation(UV_SENSOR_PIN, ADC_11db);
+
+  // ---------------------------------------------------------
+  // ADC SENSOR NIVEL DE AGUA
+  // ---------------------------------------------------------
+
+  analogSetPinAttenuation(WATER_SENSOR, ADC_11db);
 
   // ---------------------------------------------------------
   // BMP280
@@ -130,6 +138,7 @@ void setup() {
   Serial.println("DHT11 -> GPIO19");
   Serial.println("GUVA-S12SD -> GPIO34");
   Serial.println("BMP280 -> I2C");
+  Serial.println("Nivel agua -> GPIO35");   // CORREGIDO: punto y coma + pin
   Serial.println("-------------------------------------");
 
   delay(2000);
@@ -215,6 +224,24 @@ void loop() {
   Serial.print("BMP280 -> Presion: ");
   Serial.print(presion, 1);
   Serial.println(" hPa");
+
+  // =========================================================
+  // 5b. NIVEL DE AGUA (valor analógico 0-4095)
+  // =========================================================
+
+int nivel = analogRead(WATER_SENSOR);
+
+// Calibración: 0 = seco, 2000 = lleno (ajusta al valor que te dé)
+float nivelPct = map(nivel, 0, 2000, 0, 100);
+nivelPct = constrain(nivelPct, 0, 100);
+
+datos.nivel = nivelPct;
+
+Serial.print("Nivel agua -> ADC: ");
+Serial.print(nivel);
+Serial.print(" | ");
+Serial.print(nivelPct, 0);
+Serial.println(" %");
 
   // =========================================================
   // 6. ENVIAR DATOS POR ESP-NOW
